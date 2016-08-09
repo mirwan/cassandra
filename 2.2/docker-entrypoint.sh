@@ -18,12 +18,16 @@ if [ "$1" = 'cassandra' ]; then
 	: ${CASSANDRA_LISTEN_ADDRESS='auto'}
 	if [ "$CASSANDRA_LISTEN_ADDRESS" = 'auto' ]; then
 		CASSANDRA_LISTEN_ADDRESS="$(hostname --ip-address)"
+	elif [ "$CASSANDRA_LISTEN_ADDRESS" = 'extra' ]; then
+		CASSANDRA_LISTEN_ADDRESS="$(ip -f inet addr list $(ls -1 /sys/class/net | grep -vE 'eth0|lo') |grep "inet " |cut -d' ' -f6|cut -d/ -f1)"
 	fi
 
 	: ${CASSANDRA_BROADCAST_ADDRESS="$CASSANDRA_LISTEN_ADDRESS"}
 
 	if [ "$CASSANDRA_BROADCAST_ADDRESS" = 'auto' ]; then
 		CASSANDRA_BROADCAST_ADDRESS="$(hostname --ip-address)"
+	elif [ "$CASSANDRA_BROADCAST_ADDRESS" = 'extra' ]; then
+		CASSANDRA_BROADCAST_ADDRESS="$(ip -f inet addr list $(ls -1 /sys/class/net | grep -vE 'eth0|lo') |grep "inet " |cut -d' ' -f6|cut -d/ -f1)"
 	fi
 	: ${CASSANDRA_BROADCAST_RPC_ADDRESS:=$CASSANDRA_BROADCAST_ADDRESS}
 
